@@ -1,5 +1,12 @@
 # audit.py - engagement logging
 
+Simple tool designed to help keeping tracks of security audits / engagements. Logs activity to a dedicated folder for each audit.
+
+It currently supports:
+- shell output logging
+- periodic screenshots
+- automated git versioning of the audit folder
+
 ## Setup
 
 Quick install:
