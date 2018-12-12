@@ -37,7 +37,7 @@ def get_xdisplay():
 
 def get_crontab():
     try:
-        crontab = subprocess.check_output(['crontab', '-l'])
+        crontab = subprocess.check_output(['bash', '-c', 'crontab -l 2>/dev/null'])
     except subprocess.CalledProcessError as e:
         return ""
     return crontab.strip()
