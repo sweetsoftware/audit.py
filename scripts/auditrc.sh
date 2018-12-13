@@ -8,7 +8,7 @@ $ '
 elif [ -n "$BASH_VERSION" ]; then
 	AUDIT_FOLDER=$(dirname $(dirname $BASH_SOURCE))
 	AUDIT_NAME=$(basename $AUDIT_FOLDER)
-	PS1='\033[32;1m\u@\h\033[0m:\033[34;1m\W\033[0m [IP: \033[0;1m`ip route get 1 2>/dev/null|sed -n 1p|rev|cut -f2 -d" "|rev`]\033[0m `date +"%D-%T"`\n$ '
+	PS1='\033[32;1m\u@\h\033[0m:\033[34;1m\W\033[0m [IP: \033[0;1m`ip route get 1 2>/dev/null|sed -n 1p|cut -f7 -d" "`]\033[0m `date +"%D-%T"`\n$ '
 fi
 
 if [ "$(ps -ocommand= -p $PPID | awk '{print $1}')" != 'script' ];

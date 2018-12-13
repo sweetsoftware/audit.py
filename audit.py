@@ -164,18 +164,40 @@ def stop(audit_name):
     log_info("Audit stopped.")
 
 
+def export_shell_log(audit_name):
+    all_shell_logs = ""
+    shell_logs = os.path.join(get_fullpath(audit_name), 'logs', 'shell')
+    for file in os.listdir(shell_logs):
+        if file.endswith("shell.log"):
+            with open(os.path.join(shell_logs, file), 'r') as f:
+                all_shell_logs += '\n' + '='*100 + '\n' + file + '\n' + '='*100 + '\n' + f.read()
+    temp_file = "/tmp/allshells.log"
+    with open(temp_file, 'w') as f:
+        f.write(all_shell_logs)
+    dest_file = os.path.join(get_fullpath(audit_name), "shell_log.html")
+    converter = os.path.join(INSTALL_FOLDER, 'scripts', 'scripttohtml.py')
+    log_info("Exporting to " + dest_file)
+    subprocess.Popen([converter, temp_file, dest_file]).wait()
+
+
 if __name__ == "__main__":
     from argparse import ArgumentParser
-    parser = ArgumentParser(description="audit.py - engagement logging")
-    parser.add_argument('action')
-    parser.add_argument('audit_name')
+    parser = ArgumentParser(description='audit.py - engagement logging.')
+    parser.add_argument('action', help='init|start|stop|export|config')
+    parser.add_argument('audit_name', nargs='?', help='Audit name')
     args = parser.parse_args()
-    args.audit_name = os.path.basename(args.audit_name)
-
-    if args.action not in ['init', 'start', 'stop']:
-        log_error(termcolor.colored('Wrong arguments', 'red'))
+    
+    if args.action not in ['init', 'start', 'stop', 'export', 'config']:
+        log_error('Wrong arguments.')
         parser.print_help()
         exit(1)
+
+    if args.action in ['init', 'start', 'stop'] and not args.audit_name:
+        log_error('Specify an audit name')
+        exit(1)
+
+    if args.audit_name:
+        args.audit_name = os.path.basename(args.audit_name)
 
     try:
         if args.action == 'init':
@@ -184,5 +206,10 @@ if __name__ == "__main__":
             start(args.audit_name)
         elif args.action == 'stop':
             stop(args.audit_name)
+        elif args.action == 'export':
+            export_shell_log(args.audit_name)
+        elif args.action == 'config':
+            os.system('${EDITOR:-vi} %s' % os.path.join(INSTALL_FOLDER, 'config.py'))
+
     except Exception as exc:
         log_error(str(exc))
