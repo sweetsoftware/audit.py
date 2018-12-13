@@ -21,31 +21,33 @@ Dependencies:
 * git
 * mss (pip)
 * termcolor (pip)
+* ansi2html (pip)
 
 ## Usage
 
 Edit **config.py** to suit your needs.
+```
+$ audit.py config
+```
 
 Create audit project:
 ```
 $ audit.py init audit1
-
-[+] Created audit project in /root/audits/audit1
 ```
 
 Start/Resume logging:
 ```
 $ audit.py start audit1 
-
-[!] Already opened shells will not be logged
-Logging to /root/audits/audit1
-Stop with : audit.py stop audit1
 ```
 
 Stop/Pause logging:
 ```
 $ audit.py stop audit1
-[+] Audit stopped.
+```
+
+Export shell log to HTML:
+```
+$ audit.py export audit1
 ```
 
 All audit logs are saved in the main audit folder defined in **config.py**, in a subdirectory "audit1".
