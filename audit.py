@@ -224,7 +224,7 @@ if __name__ == "__main__":
         parser.print_help()
         exit(1)
 
-    if args.action in ['init', 'start', 'stop'] and not args.audit_name:
+    if args.action in ['init', 'start', 'stop', 'export'] and not args.audit_name:
         log_error('Specify an audit name')
         exit(1)
 

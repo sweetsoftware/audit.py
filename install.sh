@@ -3,7 +3,7 @@
 if [ -f $(which apt) ];
 then
 	echo -e "\x1b[32m[Installing git and pip]\x1B[0m"
-	sudo apt-get install -yq git python python-pip
+	sudo apt-get -yq update && sudo apt-get install -yq git python python-pip
 fi
 
 echo -e "\x1b[32m[Installing python requirements]\x1B[0m"
