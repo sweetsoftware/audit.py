@@ -28,8 +28,9 @@ def log_error(logstr):
 
 
 def get_xdisplay():
-    display = subprocess.check_output("who|awk '{print $2}'|sed -n 1p", shell=True).strip()
-    if not display.startswith(":"):
+    if "DISPLAY" in os.environ:
+        display = os.environ['DISPLAY']
+    else:
         log_warning("Cannot get X display, defaulting to :0")
         display = ":0"
     return display
@@ -86,10 +87,7 @@ def get_fullpath(audit_name, create=False):
 
 
 def get_rcfile():
-    if 'zsh' in os.environ['SHELL']:
-        rc_file = os.path.join(os.environ['HOME'], '.zshrc')
-    else:
-        rc_file = os.path.join(os.environ['HOME'], '.bashrc')
+    rc_file = os.path.join(os.environ['HOME'], '.bashrc')
     return rc_file
 
 
@@ -103,6 +101,25 @@ def get_git_command(audit_name):
 
 def get_source_command(audit_name):
     return 'source ' + os.path.join(get_fullpath(audit_name),'.audit', 'auditrc')
+
+
+def add_line_to_script(script_file, cmd):
+    with open(script_file, 'r') as fd1:
+        if cmd not in fd1.read():
+            with open(script_file, 'a') as fd2:
+                fd2.write('\n' + cmd + '\n')
+        else:
+            log_warning('%s already contains "%s"' % (script_file, cmd))
+
+
+def remove_line_from_script(script_file, cmd):
+    new_file = ""
+    with open(script_file, 'r') as fd:
+        for line in fd.readlines():
+            if line.strip() != cmd:
+                new_file += line
+    with open(script_file, 'w') as fd:
+        fd.write(new_file.strip() + "\n")
 
 
 def init(audit_name):
@@ -129,13 +146,7 @@ def init(audit_name):
 
 def start(audit_name):
     # Source auditrc in every shell
-    source_command = get_source_command(audit_name)
-    with open(get_rcfile(), 'r') as fd1:
-        if source_command not in fd1.read():
-            with open(get_rcfile(), 'a') as fd2:
-                fd2.write('\n' + source_command)
-        else:
-            log_warning('%s already contains "%s"' % (get_rcfile(), source_command))
+    add_line_to_script(get_rcfile(), get_source_command(audit_name))
 
     # Create cron jobs
     if config.SCREENSHOTS:
@@ -148,29 +159,50 @@ def start(audit_name):
 
 def stop(audit_name):
     # Stop auditrc sourcing
-    source_command = get_source_command(audit_name)
-    new_rc_file = ""
-    with open(get_rcfile(), 'r') as fd:
-        for line in fd.readlines():
-            if line != source_command:
-                new_rc_file += line
-    with open(get_rcfile(), 'w') as fd:
-        fd.write(new_rc_file.strip())
+    remove_line_from_script(get_rcfile(), get_source_command(audit_name))
 
     # Delete cron jobs
     delete_cronjob(get_screenshot_command(audit_name))
     delete_cronjob(get_git_command(audit_name))
 
-    log_info("Audit stopped.")
+    log_info("Audit stopped. Make sure to exit all logged shells.")
 
 
 def export_shell_log(audit_name):
     all_shell_logs = ""
     shell_logs = os.path.join(get_fullpath(audit_name), 'logs', 'shell')
+    
+    # cleanup input commands
     for file in os.listdir(shell_logs):
         if file.endswith("shell.log"):
+             with open(os.path.join(shell_logs, file), 'r') as f:
+                 logfile = f.readlines()
+                 newlogfile = "".join(logfile)
+             histfile = os.path.join(shell_logs, file + ".hist")
+             with open(os.path.join(shell_logs, histfile), 'r') as f:
+                 for line in f.readlines():
+                     histnumber = [s for s in line.split() if s.isdigit()][0]
+                     cmd = line.replace(histnumber,'',1).strip()
+                     previous_line =''
+                     for line in logfile:
+                         if '['+histnumber+']' in line:
+                             if '$' in line:
+                                 new_prompt = line.split('$')[0] + '$ ' + cmd + "\n"
+                             if '#' in line:
+                                 new_prompt = line.split('#')[0] + '# ' + cmd + "\n"
+                             newlogfile = newlogfile.replace(previous_line, previous_line.strip())
+                             newlogfile = newlogfile.replace(line, new_prompt)
+                         previous_line = line
+             with open(os.path.join(shell_logs, file+".processed"), 'w') as f:
+                    f.write(newlogfile)
+    
+    # concatenate each script
+    for file in sorted(os.listdir(shell_logs)):
+        if file.endswith("shell.log.processed"):
             with open(os.path.join(shell_logs, file), 'r') as f:
                 all_shell_logs += '\n' + '='*100 + '\n' + file + '\n' + '='*100 + '\n' + f.read()
+    
+    # convert to HTML
     temp_file = "/tmp/allshells.log"
     with open(temp_file, 'w') as f:
         f.write(all_shell_logs)

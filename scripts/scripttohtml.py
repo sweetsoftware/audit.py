@@ -20,7 +20,7 @@ def removebackspaces(text):
 
 
 def script_to_html(filename, output_filename):
-	conv = Ansi2HTMLConverter(dark_bg=False, font_size=18)
+	conv = Ansi2HTMLConverter(dark_bg=True, font_size=18)
 	with open(filename, 'r') as f:
 		ansi = f.read()
 	ansi = ansi.decode('utf-8')
