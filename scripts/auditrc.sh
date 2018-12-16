@@ -6,7 +6,7 @@ PS1='\n\033[32;1m\u@\h\033[0m:\033[34;1m\W\033[0m [IP: \033[0;1m`ip route get 1 
 
 if [ "$(ps -ocommand= -p $PPID | awk '{print $1}')" != 'script' ];
 then
-    export LOGFILE="$AUDIT_FOLDER/logs/shell/$(date +%Y-%m-%d-%H-%M-%S)_$(dd if=/dev/urandom bs=1 count=20 2>/dev/null|base64|tr -dc 'a-zA-Z0-9'|fold -w 8|head -n1)_shell.log"
+    export LOGFILE="$AUDIT_FOLDER/logs/shell/$(date +%Y-%m-%d__%H-%M-%S)_$(dd if=/dev/urandom bs=1 count=20 2>/dev/null|base64|tr -dc 'a-zA-Z0-9'|fold -w 8|head -n1)_shell.log"
     exec script -q -f "$LOGFILE";
 fi
 
