@@ -23,7 +23,7 @@ def script_to_html(filename, output_filename):
 	conv = Ansi2HTMLConverter(dark_bg=True, font_size=18)
 	with open(filename, 'r') as f:
 		ansi = f.read()
-	ansi = ansi.decode('utf-8')
+	ansi = ansi.decode('utf-8', errors='ignore')
 	ansi = removebells(ansi)
 	ansi = removebackspaces(ansi)
 	html = conv.convert(ansi)
