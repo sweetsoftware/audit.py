@@ -133,7 +133,10 @@ def init(audit_name):
     os.makedirs(os.path.join(fullpath, "logs/screenshots"))
     os.makedirs(os.path.join(fullpath, "logs/shell"))
     os.makedirs(os.path.join(fullpath, ".audit"))
-    
+    os.makedirs(os.path.join(fullpath, "vulns"))
+    os.makedirs(os.path.join(fullpath, "kickoff"))
+    os.makedirs(os.path.join(fullpath, "notes"))
+
     # Create auditrc file
     shutil.copyfile(os.path.join(INSTALL_FOLDER, 'scripts', 'auditrc.sh'), os.path.join(fullpath, '.audit', 'auditrc'))
     
