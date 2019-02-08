@@ -122,6 +122,15 @@ def remove_line_from_script(script_file, cmd):
         fd.write(new_file.strip() + "\n")
 
 
+def list_audits():
+    # Check main directory
+    if not os.path.exists(config.AUDIT_FOLDER):
+        raise Exception("Main folder %s does not exist." % config.AUDIT_FOLDER)
+    for file in os.listdir(config.AUDIT_FOLDER):
+        if os.path.exists(os.path.join(config.AUDIT_FOLDER, file, '.audit')):
+            log_info(file)
+
+
 def init(audit_name):
     # Check main directory
     if not os.path.exists(config.AUDIT_FOLDER):
@@ -222,7 +231,7 @@ if __name__ == "__main__":
     parser.add_argument('audit_name', nargs='?', help='Audit name')
     args = parser.parse_args()
     
-    if args.action not in ['init', 'start', 'stop', 'export', 'config']:
+    if args.action not in ['init', 'start', 'stop', 'export', 'config', 'list']:
         log_error('Wrong arguments.')
         parser.print_help()
         exit(1)
@@ -245,6 +254,8 @@ if __name__ == "__main__":
             export_shell_log(args.audit_name)
         elif args.action == 'config':
             os.system('${EDITOR:-vi} %s' % os.path.join(INSTALL_FOLDER, 'config.py'))
+        elif args.action == 'list':
+            list_audits()
 
     except Exception as exc:
         log_error(str(exc))
