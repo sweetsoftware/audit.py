@@ -76,13 +76,10 @@ def create_cronjob(command, interval):
     p1.communicate(new_crontab)
 
 
-def get_fullpath(audit_name, create=False):
+def get_fullpath(audit_name, raiseerror=True):
     fullpath = os.path.join(config.AUDIT_FOLDER, audit_name)
-    if not os.path.exists(fullpath):
-        if create:
-            os.mkdir(fullpath)
-        else:
-            raise Exception("Audit folder does not exist : %s" % fullpath)
+    if not os.path.exists(fullpath) and raiseerror:
+        raise Exception("Audit folder does not exist : %s" % fullpath)
     return fullpath
 
 
@@ -137,18 +134,9 @@ def init(audit_name):
         raise Exception("Main folder %s does not exist." % config.AUDIT_FOLDER)
     
     # Create folder structure
-    fullpath = get_fullpath(audit_name, create=True)
-    os.makedirs(os.path.join(fullpath, "logs"))
-    os.makedirs(os.path.join(fullpath, "logs/screenshots"))
-    os.makedirs(os.path.join(fullpath, "logs/shell"))
-    os.makedirs(os.path.join(fullpath, ".audit"))
-    os.makedirs(os.path.join(fullpath, "vulns"))
-    os.makedirs(os.path.join(fullpath, "kickoff"))
-    os.makedirs(os.path.join(fullpath, "notes"))
+    fullpath = get_fullpath(audit_name, raiseerror=False)
+    shutil.copytree(os.path.join(INSTALL_FOLDER, 'skel'), fullpath)
 
-    # Create auditrc file
-    shutil.copyfile(os.path.join(INSTALL_FOLDER, 'scripts', 'auditrc.sh'), os.path.join(fullpath, '.audit', 'auditrc'))
-    
     # Create git repository
     if config.GIT_AUTOCOMMIT:
         subprocess.check_output([os.path.join(INSTALL_FOLDER, 'scripts', 'git_init.sh'), get_fullpath(audit_name)])

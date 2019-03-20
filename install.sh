@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -f $(which apt) ];
+if [ ! -z $(which apt) ] && ( [ -z $(which pip) ] || [ -z $(which git) ])
 then
 	echo -e "\x1b[32m[Installing git and pip]\x1B[0m"
 	sudo apt-get -yq update && sudo apt-get install -yq git python python-pip
