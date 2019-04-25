@@ -3,8 +3,8 @@ AUDIT_FOLDER = "~/audits"
 
 # Enable or disable periodic screenshots
 SCREENSHOTS = True
-SCREENSHOT_INTERVAL = 1
+SCREENSHOT_INTERVAL = 15
 
 # Enable or disable git versionning
 GIT_AUTOCOMMIT = True
-GIT_AUTOCOMMIT_INTERVAL = 1
+GIT_AUTOCOMMIT_INTERVAL = 60
