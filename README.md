@@ -35,6 +35,8 @@ Create audit project:
 $ audit.py init audit1
 ```
 
+All audit logs are saved in the main audit folder defined in **config.py**, in a subdirectory "audit1".
+
 Start/Resume logging:
 ```
 $ audit.py start audit1 
@@ -50,5 +52,7 @@ Export shell log to HTML:
 $ audit.py export audit1
 ```
 
-All audit logs are saved in the main audit folder defined in **config.py**, in a subdirectory "audit1".
-
+List projects:
+```
+$ audit.py list
+```
