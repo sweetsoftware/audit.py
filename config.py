@@ -1,10 +1,10 @@
 # Folder storing audit logs
-AUDIT_FOLDER = "~/audits"
+AUDIT_FOLDER = "~/vmshare"
 
 # Enable or disable periodic screenshots
 SCREENSHOTS = True
-SCREENSHOT_INTERVAL = 1
+SCREENSHOT_INTERVAL = 15
 
 # Enable or disable git versionning
 GIT_AUTOCOMMIT = True
-GIT_AUTOCOMMIT_INTERVAL = 1
+GIT_AUTOCOMMIT_INTERVAL = 60
